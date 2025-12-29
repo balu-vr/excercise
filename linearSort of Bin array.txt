@@ -1,0 +1,49 @@
+object sortinLinerTime {
+    var subArrays = List[List[Int] ]()
+    var map = Map[String, Int ]()
+  
+  def sortLinear( arr: Array[Int] ): Array[Int] =  {
+    
+    var i = 0
+    var j = 0
+    
+    while( j< arr.length ){
+      
+      if( j < arr.length && arr(i) > arr(j) && j < arr.length ){
+        val temp = arr(i)
+        arr(i) = arr(j)
+        arr(j) = temp
+        i += 1
+        j += 1
+        
+      }
+      
+      if( j < arr.length && arr(i) == arr(j)   ) { j += 1 }
+      
+      if( j< arr.length && arr(i) < arr(j)    ){
+        i += 1
+        j += 1
+        
+      }
+      
+      
+    }
+    
+    
+    
+    
+    return arr
+    
+  }
+  
+  
+  def main(args: Array[String]): Unit = {
+    
+    val arr = Array( 1, 1, 1, 0, 1, 0, 1, 1,1,1,0,0,1,0 )
+    sortLinear(arr) 
+    arr.foreach(println)
+    
+    
+  }
+  
+}

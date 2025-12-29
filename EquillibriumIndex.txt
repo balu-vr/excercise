@@ -1,0 +1,106 @@
+Equillibrium Index: 
+
+Equilibrium index of an array is an index such that the sum of elements at lower indexes is equal to the sum of elements at higher indexes. 
+
+solution 1: This is linear time approach - O(n). There is also a space compleixty of O(n) due to new arrays created
+
+object splitArrays {
+
+    def findEq(arr: Array[Int] ): List[Int] = {
+      
+      val leftArr =  new Array[Int](arr.length)
+      val rightArr =  new Array[Int](arr.length)
+      
+      for(i <- 0 to arr.length-1){  
+        
+        if(i > 0)
+        leftArr(i) = leftArr(i-1)+arr(i)
+        else
+        leftArr(i) = arr(i)
+        
+      }
+      
+      var j = arr.length-1
+      
+      while(j >=0) {
+        if(j < arr.length-1)
+          rightArr(j) = rightArr(j+1)+arr(j)
+        else
+          rightArr(j) = arr(j)
+        
+        j -= 1
+      }
+      var newList = List[Int]()
+      for(i <- 0 to arr.length-1){
+        
+        if( leftArr(i) == rightArr(i) )
+          newList = newList :+ i
+        
+      }
+    
+    return newList
+    }
+ 
+   
+  def main(args: Array[String]): Unit = {
+
+    val arr = Array(0, -3, 5, -4, -2, 3, 1, 0)
+    val equiIndex = findEq(arr)
+    println("Equillibrium Index: "+ equiIndex  )
+    
+  }
+
+}
+
+// {1,1}, {1,2},{1,3},{2,2},{2,3},{3,3}
+
+-----------------------------
+Solution 2: 
+	We can exclude the space complexity and do the validation with time complexity of O(n)
+	
+	1. Sum the whole array and store it as a "total"
+	2. in a for loop, sum values from left to right and check if 
+			leftSubArrayTotal = Total - leftSubArray 
+		This condition says that left and right sub arrays have equal weightage.
+	3. Capture the index when the condition match 
+	
+object splitArrays {
+
+    def findEq(arr: Array[Int] ): List[Int] = {
+      
+      val total = arr.sum
+      var leftSubArrayValue = 0
+      var newList = List[Int]()
+      
+      for(i <- 0 to arr.length-1 ) {
+        
+        if(i >0){
+          
+          leftSubArrayValue = leftSubArrayValue+ arr(i) + arr(i-1)
+          
+        }
+        else  { leftSubArrayValue = leftSubArrayValue + arr(i) }
+        
+          println(" total "+total + " leftSubArrayValue "+ leftSubArrayValue + " i "+i)
+        if( leftSubArrayValue == total - leftSubArrayValue  ){
+          println(" adding i "+ i)
+          newList = newList :+ i
+        }
+        
+      }
+      
+    return newList
+    }
+ 
+   
+  def main(args: Array[String]): Unit = {
+
+    val arr = Array(0, -3, 5, -4, -2, 3, 1, 0)
+    val equiIndex = findEq(arr)
+    println("Equillibrium Index: "+ equiIndex  )
+    
+  }
+
+}
+
+

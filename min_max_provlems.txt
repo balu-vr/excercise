@@ -1,0 +1,449 @@
+class Solution:
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        maxPath = -float("inf")
+
+        # post order traversal of subtree rooted at `node`
+        def gainFromSubtree(node: Optional[TreeNode]) -> int:
+            nonlocal maxPath
+
+            if not node:
+                return 0
+
+            # add the gain from the left subtree. Note that if the
+            # gain is negative, we can ignore it, or count it as 0.
+            # This is the reason we use `max` here.
+            gainFromLeft = max(gainFromSubtree(node.left), 0)
+
+            # add the gain / path sum from right subtree. 0 if negative
+            gainFromRight = max(gainFromSubtree(node.right), 0)
+
+            # if left or right gain are negative, they are counted
+            # as 0, so this statement takes care of all four scenarios
+            maxPath = max(maxPath, gainFromLeft + gainFromRight + node.val)
+
+            # return the max sum for a path starting at the root of subtree
+            return max(gainFromLeft + node.val, gainFromRight + node.val)
+
+        gainFromSubtree(root)
+        return maxPath
+		
+		
+Request URL:
+https://app.allstacks.com/api/v1/project/37641/generated_metric_data/InvestmentHours?
+time_zone=America%2FNew_York&x_axis=time&x_axis_grouping=month&series_grouping=customfield_10165&
+series_parent_service_item_mode=All%20Parents&series_parent_service_item_grouping[]=customfield_10165
+&aggregation=sum&aggregation_field=data&average_mode=series&series=parent_service_item_name&filter_set=%7B%22and%22%3A%7B%22not%22%3A%7B%22card_state__like%22%3A%22will%20not%22%7D%7D%7D&start_date=1709193600000&end_date=1724828399000
+
+
+
+class Solution:
+    def maximumScore(self, nums, multipliers):
+
+        # Number of Operations
+        m = len(multipliers)
+
+        def helper(nums, op):
+            if op == m:
+                return 0
+
+            # Returning Maximum of Two
+            # In first parameter we have chosen nums[start], thus subproblem will be nums excluding nums[start]
+            # In second parameter we have chosen nums[end], thus subproblem will be nums excluding nums[end]
+            return max(nums[0] * multipliers[op] + helper(nums[1:], op+1),
+                       nums[-1] * multipliers[op] + helper(nums[:-1], op+1))
+
+        return helper(nums, 0)
+		
+class Solution:
+    def maximumScore(self, nums: List[int], multipliers: List[int]) -> int:
+
+        # Number of Operations
+        m = len(multipliers)
+
+        def helper(left, right, op):
+            if op == m:
+                return 0
+
+            return max(nums[left] * multipliers[op] + helper(left+1, right, op+1),
+                       nums[right] * multipliers[op] + helper(left, right-1, op+1))
+
+        return helper(0, len(nums)-1, 0)
+		
+		
+-------------------
+	
+class Solution:
+    def maximumScore(self, nums: List[int], multipliers: List[int]) -> int:
+
+        # Number of Operations
+        m = len(multipliers)
+
+        # For Right Pointer
+        n = len(nums)
+
+        memo = {}
+
+        def dp(op, left):
+            if op == m:
+                return 0
+
+            # If already computed, return
+            if (op, left) in memo:
+                return memo[(op, left)]
+
+            l = nums[left] * multipliers[op] + dp(op+1, left+1)
+            r = nums[(n-1)-(op-left)] * multipliers[op] + dp(op+1, left)
+
+            memo[(op, left)] = max(l, r)
+
+            return memo[(op, left)]
+
+        # Zero operation done in the beginning
+        return dp(0, 0)
+ 	
+	def maxProfit(self, prices: list[int]) -> int:
+        n = len(prices)
+        dp = [0 for i in range(n)]
+
+        buy_i = []
+        dp[0] = 0
+        for i in range(1, n):
+            if prices[i] > prices[i-1]:
+                buy_i.append(i-1)
+            
+            if buy_i:
+                profits = [prices[i]-prices[buy_i_cur]+dp[buy_i_cur-2] if buy_i_cur>=2 else prices[i]-prices[buy_i_cur]+0 for buy_i_cur in buy_i]
+            else:
+                profits = [0]
+
+            dp[i] = max(dp[i-1], max(profits))
+            
+        return dp[n-1]
+		
+[["John","johnsmith@mail.com","john_newyork@mail.com","john00@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+[["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+
+sorted_d [(3, ['John', 'johnnybravo@mail.com']), (0, ['John', 'johnsmith@mail.com', 'john_newyork@mail.com', 'john00@mail.com']), (2, ['Mary', 'mary@mail.com'])]
+
+[["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+[["John","johnnybravo@mail.com"],["John","johnsmith@mail.com","john_newyork@mail.com","john00@mail.com"],["Mary","mary@mail.com"]]
+
+[["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+[["John","johnsmith@mail.com","john_newyork@mail.com","john00@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+
+[["Alex","Alex0@m.co","Alex4@m.co","Alex5@m.co"],["Ethan","Ethan0@m.co","Ethan3@m.co"],["Gabe","Gabe0@m.co","Gabe2@m.co","Gabe3@m.co","Gabe4@m.co"],["Kevin","Kevin2@m.co","Kevin4@m.co"]]
+[["Alex","Alex0@m.co","Alex4@m.co","Alex5@m.co"],["Kevin","Kevin2@m.co","Kevin4@m.co"],["Gabe","Gabe0@m.co","Gabe2@m.co","Gabe3@m.co","Gabe4@m.co"],["Gabe"]]
+
+[["Alex","Alex0@m.co","Alex4@m.co","Alex5@m.co"],["Ethan","Ethan0@m.co","Ethan3@m.co"],["Gabe","Gabe0@m.co","Gabe2@m.co","Gabe3@m.co","Gabe4@m.co"],["Kevin","Kevin2@m.co","Kevin4@m.co"]]
+
+
+[["Ethan","Ethan3@m.co","Ethan3@m.co","Ethan0@m.co"],["Kevin","Kevin4@m.co","Kevin2@m.co","Kevin2@mco"],["Gabe","Gabe0@m.co","Gabe3@m.co","Gabe2@m.co"],["Gabe","Gabe3@m.co","Gabe4@m.co","Gabe2@m.co"]]
+
+
+[["David","David0@m.co","David4@m.co","David3@m.co"],["David","David5@m.co","David5@m.co","David0@m.co"],["David","David1@m.co","David4@m.co","David0@m.co"],["David","David0@m.co","David1@m.co","David3@m.co"],["David","David4@m.co","David1@m.co","David3@m.co"]]
+
+My: [["David","David0@m.co","David3@m.co","David4@m.co"],["David","David5@m.co"],["David","David1@m.co"]]
+Expected: [["David","David0@m.co","David1@m.co","David3@m.co","David4@m.co","David5@m.co"]]
+
+[["David","David0@m.co","David4@m.co","David3@m.co"],["David","David5@m.co","David5@m.co","David0@m.co"],["David","David1@m.co","David4@m.co","David0@m.co"],["David","David0@m.co","David1@m.co","David3@m.co"],["David","David4@m.co","David1@m.co","David3@m.co"]]
+
+[["David","David0@m.co","David3@m.co","David4@m.co"],["David","David5@m.co"],["David","David1@m.co"]]
+[["David","David0@m.co","David1@m.co","David3@m.co","David4@m.co","David5@m.co"],["David","David5@m.co"],["David","David1@m.co"]]
+
+[["David","David0@m.co","David1@m.co"],["David","David3@m.co","	@m.co"],["David","David4@m.co","David5@m.co"],["David","David2@m.co","David3@m.co"],["David","David1@m.co","David2@m.co"]]
+
+[["David","David0@m.co","David1@m.co","David2@m.co"],["David","David2@m.co","David3@m.co","David4@m.co","David5@m.co"]]
+[["David","David0@m.co","David1@m.co","David2@m.co","David3@m.co","David4@m.co","David5@m.co"]]
+
+
+class Solution:
+    def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        if len(nums) == 0:
+            return [[]]
+        
+        param = self.permuteUnique(nums[1:])
+        res = []
+        for p in param:
+            temp = []
+            for i in range(len(p) + 1):
+                p_copy = p.copy()
+                p_copy.insert(i, nums[0])
+                print(p_copy)
+                if p_copy not in res:
+                    res.append(p_copy)
+        return res
+        
+		
+		
+class Solution:
+    def longestValidParentheses(self, s: str) -> int:
+        maxans = 0
+        dp = [0] * len(s)
+        for i in range(1, len(s)):
+            if s[i] == ")":
+                if s[i - 1] == "(":
+                    dp[i] = (dp[i - 2] if i >= 2 else 0) + 2
+                elif i - dp[i - 1] > 0 and s[i - dp[i - 1] - 1] == "(":
+                    dp[i] = (
+                        dp[i - 1]
+                        + (dp[i - dp[i - 1] - 2] if i - dp[i - 1] >= 2 else 0)
+                        + 2
+                    )
+                maxans = max(maxans, dp[i])
+        return maxans
+		
+		
+class Solution(object):
+    def solveNQueens(self, n):
+        """
+        :type n: int
+        :rtype: List[List[str]]
+        """
+        def board_state(board):
+            updated_board = []
+            for row in board:
+                updated_board.append("".join(row))
+            return updated_board
+
+
+        def backtrack(row, cols, diag, anti_diag, board):
+            if row == n:
+                ans.append(board_state(board))
+                return 
+            
+            for col in range(n):
+                curr_diag = row-col
+                curr_anti_diag = row+col
+
+                if (col in cols or 
+                        curr_diag in diag or
+                        curr_anti_diag in anti_diag):
+                        continue 
+                
+                #print("Adding col:", col, "diag", curr_diag, "anti diag", curr_anti_diag)
+                cols.add(col)
+                diag.add(curr_diag)
+                anti_diag.add(curr_anti_diag)
+
+                board[row][col]='Q'
+                backtrack(row+1, cols, diag, anti_diag, board)
+
+                #backtracking
+                #print("Removing col:", col, "diag", curr_diag, "anti diag", curr_anti_diag)
+                cols.remove(col)
+                diag.remove(curr_diag)
+                anti_diag.remove(curr_anti_diag)
+                board[row][col] = '.'
+
+
+        board = [['.']*n for _ in range(n)]
+        ans = []
+        backtrack(0, set(), set(), set(),board )
+        
+        return ans 
+		
+		
+class Solution(object):
+    def solveNQueens(self, n):
+        """
+        :type n: int
+        :rtype: List[List[str]]
+        """
+        arr = [['.' for x in range(n)] for y in range(n)] 
+        t = [[0 for x in range(n)] for y in range(n)]
+        def updated(t, r, c):
+            for i in range(r+1, n):
+                t[i][c]=1
+            r1=r+1
+            c1=c-1
+            while(c1>=0 and r1<n):
+                t[r1][c1]=1
+                r1=r1+1
+                c1=c1-1
+            r1=r
+            c1=c
+            while(r1<n and c1<n):
+                t[r1][c1]=1
+                r1=r1+1
+                c1=c1+1
+
+            return
+
+        def issafe(r, c, a):
+            for i in range(r):
+                if a[i][c]=="Q":
+                    return False
+            r1=r
+            c1=c
+            while(r1>=0 and c1>=0):
+                if a[r1][c1]=='Q':
+                    return False
+                r1=r1-1
+                c1=c1-1
+            r1=r
+            c1=c
+            while(r1>=0 and c1<n):
+                if a[r1][c1]=='Q':
+                    return False
+                r1=r1-1
+                c1=c1+1
+            return True
+ 
+        def p(a):
+            for i in a:
+                print(i)
+            print("----------------------")
+
+
+        def compress(a):
+            for i in range(n):
+                s=''
+                for j in range(n):
+                    s=s+str(a[i][j])
+                a[i]=s
+
+        def merge(arr, r,l, t):
+            if r>=n:
+                l.append([row[:] for row in arr])
+                return
+            for i in range(n):
+                if t[r][i]!=1:
+                    temp=[row[:] for row in t]
+                    updated(t, r, i)
+                    arr[r][i]='Q'
+                    merge(arr, r+1,l,t)
+                    arr[r][i]="."
+                    t=[row[:] for row in temp]
+
+        l=[]
+        merge(arr,0,l, t)
+        for i in l:
+            compress(i)
+        return l
+		
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+
+class Solution(object):
+    def swapPairs(self, head: ListNode) -> ListNode:
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+
+        # If the list has no node or has only one node left.
+        if not head or not head.next:
+            return head
+
+        # Nodes to be swapped
+        first_node = head
+        second_node = head.next
+
+        # Swapping
+        first_node.next = self.swapPairs(second_node.next)
+        second_node.next = first_node
+
+        # Now the head is the second node
+        return second_node
+
+01101001
+10010110
+
+0110100110010110
+1001011001101001
+1001011001101001
+        
+---------------------------------
+
+class Solution:
+    def combinationSum2(self, candidates, target):
+        answer = []
+        candidates.sort()
+        self.backtrack(candidates, target, 0, [], answer)
+        return answer
+
+    def backtrack(self, candidates, target, totalIdx, path, answer):
+        if target < 0:
+            return  # backtracking
+        if target == 0:
+            answer.append(path)
+            return  # end
+        for i in range(totalIdx, len(candidates)):
+            if i > totalIdx and candidates[i] == candidates[i - 1]:
+                continue
+            self.backtrack(
+                candidates,
+                target - candidates[i],
+                i + 1,
+                path + [candidates[i]],
+                answer,
+            )
+			
+class Solution:
+    def hasPathSum(self, root: TreeNode, sum: int) -> bool:
+        if not root:
+            return False
+
+        sum -= root.val
+        if not root.left and not root.right:  # if reach a leaf
+            return sum == 0
+        return self.hasPathSum(root.left, sum) or self.hasPathSum(
+            root.right, sum
+        )
+		
+		
+		public class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int count = 0, sum = 0;
+        HashMap < Integer, Integer > map = new HashMap < > ();
+        map.put(0, 1);
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (map.containsKey(sum - k))
+                count += map.get(sum - k);
+            map.put(sum, map.getOrDefault(sum, 0) + 1);
+        }
+        return count;
+    }
+}
+
+-----------------------------------------------------------
+
+public class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int count = 0;
+        for (int start = 0; start < nums.length; start++) {
+            int sum=0;
+            for (int end = start; end < nums.length; end++) {
+                sum+=nums[end];
+                if (sum == k)
+                    count++;
+            }
+        }
+        return count;
+    }
+}
+
+
+class Solution:
+    def recursion(self, n: int, k: int) -> int:
+        # First row will only have one symbol '0'.
+        if n == 1:
+            return 0
+
+        total_elements = 2 ** (n - 1)
+        half_elements = total_elements // 2
+
+        # If the target is present in the right half, we switch to the respective left half symbol.
+        if k > half_elements:
+            return 1 - self.recursion(n, k - half_elements)
+
+        # Otherwise, we switch to the previous row.
+        return self.recursion(n - 1, k)
+
+    def kthGrammar(self, n: int, k: int) -> int:
+        return self.recursion(n, k)

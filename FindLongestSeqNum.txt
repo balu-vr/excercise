@@ -1,0 +1,184 @@
+
+Scenario 1: When there are duplicates in the array and the duplicates are to be removed : 
+
+Solution: Naive approach 
+1. sort the data 
+2. Do a for loop to check the difference between consecutive values to add to a list. 
+
+Time complexity - O(nlogn)
+
+object longArray {
+  
+  def longsubString( arr: Array[Int] ): List[Int] =  {
+    
+   val newArr = arr.sorted
+   val arrLength = arr.length
+   var newList = List[Int]() 
+   var tempList = List[Int]() 
+    
+   for( i <- 0 to arrLength-1) {
+     
+     if( i+1 <= arrLength-1 && (newArr(i+1)-newArr(i) == 1 )  ){ 
+         tempList = tempList :+ newArr(i)
+         println(" tempList "+ tempList)
+        }
+     
+     if( i+1 <= arrLength-1 && newArr(i+1)-newArr(i) > 1 )
+      {  
+       tempList = tempList :+ newArr(i)
+        if( newList.length < tempList.length) { 
+          newList = tempList 
+        }
+         if(i != arrLength-1) tempList = List[Int]()
+      }     
+     
+     if( i == arrLength-1  )
+        {
+          if(newArr(i) - newArr(i-1) ==1  ){
+            tempList = tempList :+ newArr(i)  
+          }
+          if( newList.length < tempList.length) { 
+          newList = tempList
+          //tempList = List[Int]() 
+          }
+          
+        }
+     
+   } 
+    return newList
+    
+  }
+  
+  
+  def main(args: Array[String]): Unit = {
+    
+    val arr = Array( 7,6,8,0,1,5, 0,2,1,11,1,14,16,12,15)
+    println("Long array is "+ longsubString(arr) ) 
+    
+  }
+  
+}
+
+------------------------
+Without sort 
+	Using a map datastructure. 
+Solution: 
+	1. Add all elements to map first - O(n)
+	2. Another for loop, where each element will be checked until the smallest value and largest value are found consecutively by using map that does O(1) search 
+
+object longArray {
+   
+  def longsubString( arr: Array[Int] ): List[Int] =  {
+    
+   var map = Map[Int, Int ]()
+   
+   for(i <- 0 to arr.length-1) {
+      map = map + ( arr(i) -> arr(i) )
+     
+   }
+    var newList = List[Int]()
+    var tempList = List[Int]()
+    
+    
+   for(i <- 0 to arr.length-1) {
+     
+     var start = arr(i)
+     var end = arr(i)
+            
+     while( map.contains(start) ) { start -= 1   }
+     
+     while( map.contains(end) ) {     end += 1   }
+     
+     for( j <- start+1 to end-1) {    tempList = tempList :+ j   }
+     
+     if( newList.length < tempList.length ) { 
+       newList = tempList
+     }
+     tempList = List[Int]()
+   
+   }
+    
+    
+    return newList
+    
+  }
+  
+  
+  def main(args: Array[String]): Unit = {
+    
+    val arr = Array( 7,6,8,0,1,5, 0,2,1,11,1,14,16,12,15,13)
+    println("Long array is "+ longsubString(arr) ) 
+    
+    
+    
+  }
+  
+}
+----------------------------------------------------------------
+Using a prority Queue:
+
+Here when elements are inserted into a priority queue, they will automatically inserted in sorted desc order with time complexity of O(logn) as it uses heap sort.
+We apply a for loop to read each element from the queue and compare with prev element
+So total complexity is O(n)
+
+import scala.collection.mutable.PriorityQueue
+
+object longArray {
+   
+  def longsubString( arr: Array[Int] ): List[Int] =  {
+    
+   var q = new PriorityQueue[Int]
+   
+   for(i <- 0 to arr.length-1) {
+      q.enqueue( arr(i) )
+     
+   }
+    var newList = List[Int]()
+    var tempList = List[Int]()
+    var prev = q.dequeue() 
+    
+   while( !q.isEmpty ){
+     
+     val curr = q.head
+     var start = 0
+     var end = 0
+     println( "prev "+prev +" curr "+curr )
+     if( prev - curr > 1 ) 
+          {
+            tempList = tempList :+ prev
+            if( newList.length < tempList.length ){
+              newList = tempList
+            }
+            tempList = List[Int]()
+            tempList = tempList :+ curr
+            prev  = q.dequeue() 
+          }
+     if( prev - curr == 0)
+      { prev  = q.dequeue()   }
+     
+     if( prev - curr == 1)
+      { 
+        tempList = tempList :+ prev
+        prev  = q.dequeue()   
+      }
+     
+     println(" tempList "+ tempList )
+   
+   }
+    
+    
+    return newList
+    
+  }
+  
+  
+  def main(args: Array[String]): Unit = {
+    
+    val arr = Array( 7,6,8,0,1,5, 0,2,1,11,1,14,16,12,15,13)
+    println("Long array is "+ longsubString(arr) ) 
+    
+    
+    
+  }
+  
+}

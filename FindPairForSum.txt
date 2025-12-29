@@ -1,0 +1,109 @@
+Find a pair with the given sum in an array
+
+Brute force -  Find a pair of elements in a list that form the sum 
+
+Brute force - O(n^2)
+
+object findSum {
+  def listSum(arr: Array[Int], tgt: Int): List[Int] = {
+    
+      for(i <- 0 to arr.length-1  )  {
+        
+          for(j <- i+1 to arr.length-1){
+            if (tgt == arr(i) + arr(j)  ) 
+              return List( arr(i),arr(j) )
+          }
+      }
+    
+    return null
+    
+  }
+  
+  def main(args:Array[String]  ): Unit = {
+    
+    val arr = Array(8, 7, 2, 5, 3, 1)
+    val sum = 10
+    
+    println(" list of elements contribute for sum "+ sum + " = "+ listSum(arr, sum)  )
+    
+  }
+  
+}
+
+-------------------------
+Optimization 1: Sort the data and go through array by summing up two extremes. 
+If low + high < sum then low = low +1 else high = high -1 
+
+object findSum {
+  def listSum(arr: Array[Int], tgt: Int): List[Int] = {
+    
+   // def sort(a: Int, b: Int) = {  if(a)  }
+    
+      val sortedArr = arr.sorted
+      var low = 0
+      var high = arr.length-1
+        sortedArr.foreach(println)
+      while(low < high){
+        
+        if( sortedArr(low) + sortedArr(high)  == tgt )
+          return   List( sortedArr(low), sortedArr(high)  )  
+        if( sortedArr(low) + sortedArr(high) < tgt )
+          low += 1
+        else high += 1
+        
+      } 
+    
+      return null
+    
+  }
+  
+  def main(args:Array[String]  ): Unit = {
+    
+    val arr = Array(8, 7, 2, 5, 3, 1)
+    val sum = 10
+    
+    println(" list of elements contribute for sum "+ sum + " = "+ listSum(arr, sum)  )
+    
+  }
+  
+}
+-------------------------
+Better method - Hash
+store each value of arr in hash map, for each value of arr find sum - hash value and find if that reminder exists in map  and move forward 
+
+object findSum {
+  def listSum(arr: Array[Int], tgt: Int): List[Int] = {
+    
+    var map = Map[Int, Int]()
+    
+    for( i <- 0 to arr.length-1 ){
+      
+      map = map + ( arr(i) -> arr(i) )
+      
+    }
+    
+    println(" Map "+ map )
+    
+    for( i <- 0 to arr.length-1 ){
+      
+       val rem =  tgt - arr(i) 
+       // println( " arr(i) "+ arr(i) + " map.getOrElse( arr(i),0) "+    )
+       // map = map - ( arr(i) )
+      
+      if( map.contains(rem)  ){ return List( arr(i), rem )  }
+      
+    }
+      return null
+  }
+  
+  def main(args:Array[String]  ): Unit = {
+    
+    val arr = Array(8, 7, 2, 5, 3, 1)
+    val sum = 17
+    
+    println(" list of elements contribute for sum "+ sum + " = "+ listSum(arr, sum)  )
+    
+  }
+  
+}
+

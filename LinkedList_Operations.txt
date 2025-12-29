@@ -1,0 +1,116 @@
+object linkedList{
+  
+  case class Node(var data:Int, var next:Node )
+  
+  def insert(root: Node, data: Int): Node = {
+    
+      var newNode = new Node(data,null)  
+      var newRoot = root
+    if(root == null){
+        newRoot = newNode
+      }
+    
+    else{
+       
+      while(newRoot.next != null ){
+        newRoot = newRoot.next 
+      }
+      
+      newRoot.next = newNode 
+      
+    }
+    
+    return newRoot
+    
+  }
+  
+  
+  def printLL(head: Node): Unit = {
+    
+    var rover = head
+    while(rover != null) {
+      //println("Inside while loop ")
+      println(rover.data)
+      rover = rover.next 
+      
+    }
+     //println(rover.data)
+    
+  }
+  
+  
+  def reverseLink(head: Node): Node = {
+    
+    var rover = head 
+    var preVal:Node = null
+    var nextVal:Node = null
+    
+    while(rover != null){
+      nextVal = rover.next
+      rover.next = preVal
+      preVal = rover
+      rover = nextVal
+      
+    }
+    return preVal 
+    
+    
+  }
+  
+  
+  def delete(root:Node, data: Int): Node = {
+    
+    var rover = root
+    var prevNode: Node = null
+    
+    while(rover.data != data){
+      prevNode = rover 
+      rover = rover.next 
+    }
+    
+   if(prevNode == null){
+      rover = rover.next 
+      return rover
+      
+    }
+    else {
+    rover = prevNode
+    rover.next = rover.next.next
+    return root
+    }
+  }
+  
+  
+  def main(args: Array[String] ): Unit = {
+    
+    var head: Node = null 
+    
+    var root: Node = null 
+    
+    root=insert( root, 10)
+    head=root
+    root=insert( root, 20)
+    root=insert( root, 15)
+    root=insert( root, 30)
+    root=insert( root, 55)
+    root=insert( root, 75)
+    root=insert( root, 35)
+    
+    println("Printing LL")
+    
+    printLL(head) 
+    
+    val revHead= reverseLink(head)
+    println("Printing reverse LL")
+    
+    printLL(revHead) 
+    
+    val afterDel= delete(revHead,35)
+    
+    println("After delete ")
+    printLL(afterDel) 
+    
+  }  
+  
+  
+}

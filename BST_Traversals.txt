@@ -1,0 +1,954 @@
+Small example of Dynamic programming wih recursion  O(n)
+A recursion by itself without dynamic programming will cost O(2^n)
+
+one example: https://youtu.be/qli-JCrSwuk
+
+Dynamic programming uses following techniques that reduces the recursive calls drasticaly from exponential to polynomial level.
+
+DP uses memorization and re-use or you can call it as
+	Recursion + memorization
+
+This is careful brute force method ( :) ) because we apply brute force with morization and reduce recursion drastically 
+	
+Time complexity - No.of subproblems * time/subproblem 
+				-		n			* 1
+				- O(n)
+	
+Example : Fibonacci
+
+Naive approach : 
+		
+	def	fib(val n: Int ){
+			if(n == 1 || n == 2) { return 1}
+			else 
+				return fib(n-1) + fib(n-2)
+		}
+		
+Memorization and reuse approach will use a technique to store the calculated value and do not repeat the calculation again 
+Time complexity - O(n)
+To store vals, we can use a hash table or array 
+
+	def fib(val n: Int){
+	
+		if (fib(n) in memory ) { return arr(n) }
+		
+		if(n == 1 || n == 2) { return 1}
+		
+		else {
+		val f = fib(n-1) + fib(n-2)
+		
+		fib(n) = f
+		return f
+		} 
+	
+	}
+	
+Bottom up approach : (exactly same as meorization  but with topological sort of dependency DAG )
+
+	for k in range(1,n+1)
+		if k <= 2 { return 1 }
+		else f = fib(k-1) + fib(k-2)
+		 fib(k) = f
+		 return fib(n)
+	
+To use DP for shortest paths, the graph has to be acyclic 
+	
+	
+5 easy steps for DP: 
+--------------------
+1. Define subproblems
+2. Guess(part of solution)
+3. Relate subproblems
+4. Recurse & memorize or build DP table (even bottome up)
+5. Solve original problem 
+
+--------------------------------------------------------------------------------
+Tutorial - https://www.youtube.com/watch?v=oBt53YbR9Kk
+
+
+Fibonacci
+
+	def fib(n: Int): Int = {
+		
+		if(n <= 2 ) { return 1}
+		else 
+			return fib(n-1) + fib(n-2)
+		
+	}
+
+Time complexity: 
+This method has time complexity of O(2^n ). 
+As we see below the numbers double at each levele 1,2,4,8,16 etc -> 
+for n numbers, there will be recursions doubling at each level --> 2*2*2*2......n time = 2^n 
+
+	Sample for n = 7
+						7
+					   / \
+					  /	  \
+					 /     \
+					6		5
+				   / \     / \
+				  /   \   /   \
+				 5     4 4     3
+				/ \   /\ /\	  / \
+			   4   3 3 2 3 2 2   1
+			  / \ / \ ........
+			 3   2   1
+			 ...
+
+Space complexity: In the above calculation, the space complexity is only of O(n). This is because at any given time, the memory needed will be only for O(7) values 
+
+Implementing Fib with hashmap: 
+
+object fibWithMemo {
+  
+	//hash map created to map key with value 
+    var m = Map[Int, Double]()
+  
+  def fib(n: Int ): Double = {
+      
+    println( " n "+n +" m.getOrElse(n,0)  " + m.getOrElse(n,0) )
+    
+    if( m.getOrElse(n,0) != 0 ) return  m.getOrElse(n,0)
+   
+    if( n <=2 ) { return 1 }
+    
+    else 
+      {
+         val v = fib(n-1 ) + fib(n-2 )
+		 //adding key value pair to the map 
+         m = m + (n -> v)
+         return v
+      }  
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    println("fib of 10 "+fib(10 ) ) 
+    
+  }  
+  
+} 
+
+------------------Implementing fib with array as memo ------------------
+import scala.collection.mutable.ArrayBuffer
+object fibWithMemo {
+  
+    var arr = Array.fill(1000)(0.0)
+  
+  def fib(n: Int ): Double = {
+      
+    println(" arr(n)  " + arr(n) +  " n "+n )
+    
+    if( arr(n) != 0 ) return  arr(n)
+   
+    if( n <=2 ) { return 1 }
+    
+    else 
+      {
+         val v = fib(n-1 ) + fib(n-2 )
+         arr(n) = v
+         return v
+      }  
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    println("fib of 10 "+fib(100) )
+    
+    
+  }
+  
+  
+} 
+
+------------------------------------------------------------------------------------
+Grid traveller problem  - (Multiple ways of asking this question of how many ways a traveller can go from a to b)
+
+From 39th minute of the video - https://www.youtube.com/watch?v=oBt53YbR9Kk
+
+Problem statement - How many was a grid traveler goes from top left corner of a grid to the bottom right corner of the grid of size m *n
+
+Conditions: The traveller either can go only down or Right not up or left 
+
+Why recursion ? 
+	The problem can be divided and conquered with sub problems which boil down to 1 grid or no grid 
+
+consider a grid of 3 * 3 
+
+   (0,0)----------(0,3)
+		|A |B |C |
+		----------
+		|D |E |F |
+		----------
+		|G |H |I |
+   (3,0)----------(3,3)
+   
+The traveller in this case go in 6 ways --> 
+	A -> D -> G -> H -> I 
+	A -> B -> C -> F -> I 
+	A -> D -> E -> F -> I
+	A -> D -> E -> H -> I
+	A -> B -> E -> H -> I
+	A -> B -> E -> F -> I
+	
+To find the number of ways in a grid of m,n using recursion it takes 2^(m+n) time complexity because 
+
+						O(2,2)
+					   / \
+					  /   \
+					 /     \
+			   (1,2)O	    O(2,1)
+				   / \     / \
+				  /   \	  /   \
+			(0,2)O	   O O(1,1)O
+					 (1,1)	   (2,0)
+					 
+Base case: 
+Here the if the m value or n value of the grid is 0, which no grid, then obviously, the no.of ways = 0 which forms the base case 
+If both ma and n = 1, there is only 1 way to reach the destination. this is also a base case
+	
+	1. if(m == 0 || n == 0 ) { return 0}
+	1. if(m == 1 && n == 1 ) { return 1}
+	
+Code:
+
+object gridWithMemo {
+  
+    var map = Map[String, Double]()
+  
+  def gridTraveller(n: Int, m: Int ): Double = {
+      
+    if(n == 0 || m == 0 ) { return 0}
+    if(n == 1 && m == 1 ) { return 1}
+    
+    val key = n +","+m 
+    
+    if( map.getOrElse(key,-1) != -1 ) return  map.getOrElse(key,-1)
+   
+    
+    
+    else 
+      {
+         val v = gridTraveller(n-1,m ) + gridTraveller(n,m-1 )
+		 //adding key value pair to the map 
+          map = map + (key -> v)
+         return v
+      }  
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    println("Grid traveler ways "+gridTraveller(18,18 ) ) 
+    
+  }  
+  
+} 
+
+Time complexity of this dropped to O(m*n)
+Space complexity is always O(m +n)
+
+
+-------------------------------
+Also, from the above diagram, we can observe that the subtree or  result subtree O(1,2) is same as O(2,1)
+This means, the value of O(m,n) should be same as O(n,m ) at any given point 
+
+So this reduces time complexity further 
+
+
+Implementation: 
+
+object gridWithMemo {
+  
+    var map = Map[String, Double]()
+  
+  def gridTraveller(n: Int, m: Int ): Double = {
+    
+    if(n == 0 || m == 0 ) { return 0}
+    if(n == 1 && m == 1 ) { return 1}
+    
+    val key1 = n +","+m 
+    val key2 = m +","+n 
+     println("key "+ key1 )
+    
+    if( map.getOrElse(key1,-1) != -1 ) return  map.getOrElse(key1,-1)
+    if( map.getOrElse(key2,-1) != -1 ) return  map.getOrElse(key2,-1)
+    
+    else 
+      {
+         val v = gridTraveller(n-1,m ) + gridTraveller(n,m-1 )
+		 //adding key value pair to the map 
+          map = map + (key1 -> v)
+          map = map + (key2 -> v)
+         return v
+      }  
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    println("Grid traveler ways "+gridTraveller(6,6 ) ) 
+    
+  }  
+  
+} 
+	
+--------
+Memoization recipe: 
+	
+	1. Make it work 
+		Visualize the problem as a tree
+		Implement the tree with recursion 
+		Consider leaf nodes as base case in the recursion process
+		Test it with simple data
+		
+	2. Optimize 
+		Add a map or array or suitable storage 
+		Add additional base case to return memorized value from map or array 
+		Store return values in the map or arr 
+
+
+------------
+Solve below using memo
+
+From the given array list, see if you find a target value which can be arrived at by
+	1. Any individual value in the array match the target value
+	2. sum of any num of array values match target 
+	3. any array element can be used any num of times 
+	4. No negative values in the array 
+	
+Ex [(2,3,4,7), 7] --> true 
+Ex [(3,5), 7] --> false 
+
+object checkSum {
+  var map = Map[Int, Boolean]()
+  
+  def tgtCheck(tgt: Int, l: List[Int] ): Boolean = {
+    
+      println(" tgt val "+ tgt + " map.getOrElse(tgt,false) "+ map.getOrElse(tgt,false) )
+      
+    if(map.getOrElse(tgt,false) == true  ) { return true }
+    if(map.getOrElse(tgt,true) == false  ) { return false }
+    if(tgt == 0 ) { return true }
+    if(tgt < 0 ) { return false}
+    
+    else{
+      l.foreach(x => {
+        val rem = tgt- x 
+        if(tgtCheck(rem, l))
+         {    
+          map += (rem -> true )  
+          return true
+         }
+        else { map += (rem -> false )  }
+         }        
+        )
+      
+    }
+    return false 
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    val tgt = 7
+    println(" Will the elements contribute to "+tgt +" ? "+ tgtCheck(tgt, List(3,3,3,5) ) )  
+    
+  }
+  
+  
+}
+
+--------------------------------------------------------------------
+Now adding a twist with returning list of values that makes up to the target 
+
+
+//m - Target value
+//n - no.of elements in array 
+//Brute force 
+//Time complexity without DP -  O( (n^m)* m  )
+//Space - O(m)
+
+//With DP 
+//Time complexity without DP -  O(n*(m^2)  )
+//Space - O(m^2)
+
+
+
+object howSum {
+  var newList = List[Int]()
+  var map = Map[Int, Boolean]()
+  
+  def sumCheck(tgt: Int, l: List[Int] ): Boolean = {
+     
+    println( "tgt " + tgt   )
+    if( map.getOrElse(tgt,false)== true   ) { return true}
+    if( map.getOrElse(tgt,true)== false   ) { return false}
+    if(tgt == 0){ 
+      return true }
+    
+    if(tgt < 0 ){ return false }
+    else{
+      l.foreach(x =>  {
+        
+        val rem = tgt-x
+        if( sumCheck(rem,l) ) {        //only when the call is true, it will roll backup to the root and will collect elements while going back 
+          newList= newList  :+ x
+          map = map + (tgt -> true )
+          return true 
+          
+        }
+        map = map + (tgt -> false )
+        
+      })
+      
+    }
+    
+    return false 
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    val tgt = 7
+    val l = List(3,3,5,4,9)
+    
+     sumCheck(tgt, l) 
+     println( newList )
+    
+  }
+  
+}
+-------------------------------------------------------------------------------------------
+// Find the shorter list that make up to the total value 
+// have to iterate through entire tree to find the shortest list 
+// at exactly 2nd hour of the video for time complexity explanation
+
+object bestSum{
+     var memo = Map[Int, List[Int] ]()
+	  
+  def bestSumArr(l: List[Int], tgt: Int  ): List[Int] ={
+    
+    if(memo.contains(tgt) ){ return memo.getOrElse(tgt, null)  }
+    
+    if(tgt == 0) { return List[Int]() }
+      
+    if(tgt < 0 ){ return null     }
+    var shortList = List[Int]()
+    
+    l.foreach( x =>   {
+        val rem = tgt - x
+      
+        val updList = bestSumArr(l, rem) 
+          println (" update List "+ updList )
+        if(updList != null  )
+        {
+          println("Define new list >> ")
+          val newList: List[Int] = updList :+ x
+          println(" update list when path found "+ updList + " x value "+x+ " newList "+ newList )
+           
+          if( shortList.length == 0 || newList.length < shortList.length  ) {
+             shortList = newList 
+          }
+          
+        } 
+         
+    })
+    
+    memo = memo + (tgt -> shortList)
+    return shortList
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    val tgt = 8 
+    val l = List(1,3,5)
+
+    println(" Array that sums up to final target "+ bestSumArr(l, tgt)  )
+    
+  }
+  
+}
+-------------------------------------------------------------------------------------------
+Find if a word exists in the word bank 
+
+Ex: If the array contains multiple words and a seperate word is given to find if it exists 
+Word : elephant 
+wordbank: { e, el, elep, ph, han,ant, hant }
+
+Check time complexity at around 2hr 30 mins of the video
+	m - length of the string
+	n = no.of elements in the array 
+Without memoization:
+	Time complexity - O( (n^m) *m )
+	Space complexity ( O(m^2) )
+
+With memoization:
+	Time complexity - O( (n*(m^2) )
+	Space complexity ( O(m^2) )
+	
+	
+
+object wordCheck{
+  var map = Map[String, Boolean]()
+  def checkWords(tgt: String, wordBank: Array[String] ): Boolean = {
+    
+    if(map.contains(tgt) ) { return  map.getOrElse(tgt, false) }
+    if(tgt == "") { return true }
+    
+    wordBank.foreach( word => {
+      if( tgt.indexOf(word) == 0 ) {
+          val suffix = tgt.slice(word.length, tgt.length)
+          println( " suffix "+ suffix )
+         
+        if(checkWords(suffix, wordBank ) ) {
+           map = map + (suffix -> true )  
+          return true 
+        }
+        else { map = map + (suffix -> false )  }
+          
+      }
+      
+      
+    }  ) 
+    
+    return false 
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    println( " word found ? " + checkWords("skateboard", Array("bo","rd","ate","t","ska", "sk","boar" ) ) )
+    println( " word found ? " + checkWords("enterapotentpot", Array("a","p","ent","enter","ot", "o","t" ) ) )
+    println( " word found ? " + checkWords("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeh", Array("e","e","eee","eeee","eeeee" ) ) )
+    
+  }
+  
+}
+---------------------------------------------------------
+Count no.of ways the word can be constructed instead of returning true or false 
+object wordCount {
+  var map = Map[String, Int]()
+  
+  def wordsCount(tgt: String, wordBank: Array[String] ): Int = {
+    
+    if( map.contains(tgt)  ){  return  map.getOrElse(tgt, 0)  }
+    if( tgt == "" ) { return 1 }
+    
+    var totalCount = 0 
+    
+    wordBank.foreach(word =>    {
+      
+      if(tgt.indexOf(word) == 0 ) {
+        
+        val cnt = wordsCount( tgt.slice(word.length, tgt.length ), wordBank  )
+        totalCount += cnt
+        
+      }
+      
+      
+    })
+    
+    map = map + ( tgt -> totalCount  ) 
+    return totalCount 
+    
+  }
+  
+  def main(args: Array[String]): Unit = {
+    map = Map[String, Int]()
+    println( "No.of ways to construct word " + wordsCount( "skateboard", Array( "bo","rd","ate","t","ska","d","sk","boar" ) )  )
+    map = Map[String, Int]()
+    println( "No.of ways to construct word " + wordsCount( "eeeeeeeeeeeeeeeh", Array( "e","ee","e" ) )  )
+    
+    
+  }
+  
+  
+}
+
+--------------------------------------------------------------------------------------------
+Print all the different ways the word can be constructed.
+
+Check updatedList which is list of lists.
+
+object howConstruct {
+  var map = Map[String, List[String] ]()
+  
+  def construct(arr: Array[String], str: String ): List[String] = {
+    
+    if(map.contains(str)  ) { return map.getOrElse(str, null)  }
+    if(str == "") { return List[String]() }
+    
+    var finalList = List[String]()
+    var updatedList = List[List[String] ]()
+    arr.foreach(word => {
+      if(str.indexOf(word) == 0 ) {
+        
+        val updList = construct( arr, str.slice(word.length, str.length)  )
+        if( updList != null )
+           finalList = updList :+ word
+          updatedList = finalList :: updatedList
+          println(" updatedList "+ updatedList)
+      }
+      
+    })
+    map = map + (str -> finalList )
+    return finalList 
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    println(" List of substrings used " + construct( Array("e","purp","p", "ur", "le","spy","xyz","pur" ), "purple" ))
+    
+  }
+  
+}
+----------------------------------------------------------------------------------------------
+Next concept DP is Tabulation: 
+
+Tabulation is a process where we memorize the values in a tabular format which can be of type array 
+
+Ex: Fib calculation :
+	As we know the fib calculation leads to the sum of previous two numbers .
+	At each level we calculate the value as sum of previous two values or 
+		for each next two leveles add the values from current position and move forward 
+		
+Ex: fib(6)
+	step 1 - create an array of size 7  (n+1)
+	step 2 - initialize with 0s
+	step 3 - fill the array for position 0 as 0 and 1 as 1 as initial values as we know fib(1) = 1
+	step 4 - iteratively traverse through the array and for next two positions add value from current position 
+	
+		Visualize: 
+				Array :	0	1	0	0	0	0	0
+		
+		Ina for loop, add value of position i to i+1 & i+2 and iterte further 
+		i = 0
+				Array: 	0	1	0	0	0	0	0
+		i = 1
+				Array: 	0	1	1	1	0	0	0
+		i = 2
+				Array: 	0	1	1	2	1	0	0			
+		i = 3
+				Array: 	0	1	1	2	3	2	0			
+		i = 4
+				Array: 	0	1	1	2	3	5	3
+		i = 5
+				Array: 	0	1	1	2	3	5	8
+				
+return array(n) which is 8 
+
+Here the time complexity of this fib problem is O(n) as we just move forward in an array 
+	
+Tabulation recipe : 
+	1. Visualize the problem as a table
+	2. Size the table based on the inputs
+	3. Initialize the table with default values
+	4. seed the initial answer into the table (base case)
+	5. Iterate through the table 
+	6. Fill further positions based on current position 
+
+Advantage with tabulation is the data is already stored in a table, so we dont have to start with brute force and then momize it rather use tabulation that automatically memoize and propogate while you iterate 
+
+Write codes for the following 
+1. Fib 
+2. Grid traveller 
+
+Fib code: 
+---------
+object fibTabulate {
+  def fib(n: Int ): Double = {
+    
+    val arr =  Array.fill(n+1) (0.0)
+    arr(1) = 1
+    
+    for( i<- 0 to n ){
+      
+       if( i+1 <=n) { arr(i+1) += arr(i) }
+      if( i+2 <=n) { arr(i+2) += arr(i) }
+      
+    }
+    
+    return arr(n)
+    
+  }
+  
+  def main(args: Array[String]): Unit = {
+    
+    println(" Fib of 6 ="+fib(6) )
+    println(" Fib of 100 ="+fib(100) )
+    
+  }
+  
+}
+
+Grid Traveller:  Time complexity - O(m*n)  [ m,n are sizes of 2d array ]
+
+Grid : 3*3 visuablized 
+create a 4*4 array 
+
+	|0|0|0|0|
+	|0|0|0|0|
+	|0|0|0|0|
+	|0|0|0|0|
+	
+assign a value 1 at position 1,1
+	|0|0|0|0|
+	|0|1|0|0|
+	|0|0|0|0|
+	|0|0|0|0|
+
+Traverse throught the grid where we adjust values to the right and to the down by adding the values from current position
+	
+here at position (1,1)	 the value is 1
+We add this to positions (1,2) and (2,1)
+Not: The traversal calc happens from (0,0) but the adjacent values in row 0 and col 0 will be 0 as the value at position(0,0) is 0
+
+	|0|0|0|0|
+	|0|1|1|0|
+	|0|1|0|0|
+	|0|0|0|0|
+
+move forward , at pos(1,2) adjacent values for it are (1,3) and (2,2). similarly for (2,1) adjacents are (2,2) and (3,1)
+Note here the position(2,2) will be added twice by two current positions , so value at pos(2,2) becomes 2 
+
+	|0|0|0|0|
+	|0|1|1|1|
+	|0|1|2|0|
+	|0|1|0|0|
+
+Traverse further 
+
+	|0|0|0|0|
+	|0|1|1|1|
+	|0|1|2|3|
+	|0|1|3|0|
+	
+Traverse further 
+
+	|0|0|0|0|
+	|0|1|1|1|
+	|0|1|2|3|
+	|0|1|3|6|
+
+Return value 6 at position (m)(n)
+
+Code: 
+
+object gridTabulate {
+  def gridTravel(m: Int, n: Int ): Double = {
+    
+    val arr =  Array.ofDim[Double](m+1,n+1 )
+    arr(1)(1) = 1
+    
+    for( i <- 0 to m) { 
+      for( j <- 0 to n ) {
+        if(i+1 <= m){ arr(i+1)(j) += arr(i)(j)  }
+        if(j+1 <= n){ arr(i)(j+1) += arr(i)(j)  }
+      }
+    }
+    
+    return arr(m)(n)
+    
+  }
+  
+  def main(args: Array[String]): Unit = {
+    //only possible to travel either downwards or to the right 
+    println("No of ways to pass through a Grid of (3,3)  ="+gridTravel(3,3) )
+    println("No of ways to pass through a Grid of (18,18)  ="+gridTravel(18,18) )
+    
+  }
+  
+}
+
+--------------------------------------------
+
+canSum problem :
+
+Here we construct a table or array with length of tgt value 
+Then we spread value true or false across the array based on the elements in the array 
+
+Ex: For a target of 4, if the values in arr are (2,3)
+We set initial position in the array to true, which is at position 0. This we do to initiate the process to iterate through the array. 
+We then mark true at each position of the array, so at positions 2 and 3, we mark it true. Which means if your target value is either 2 or 3, then its true that you have a match. 
+then we iterate by one position where, the cursor goes to position 1 and checks if that is true. If not skips and moves forward .
+The skip it does when it is false means, that there is no value from position 1 to reach to the tgt (as its not even in arr)
+At position 2, we find true, then we jump through the array to position (2+2) position 4 and mark it true, which means at position 2 I can add another 2 that makes value at 4 as true
+At position 2, it also tries to jump by another 3 which is pos 5, that is beyond array size
+at position 3, we try to jump 2 numbers first which is more than tgt value and then 3 numbers which is alos beyond tgt. which means we cant rech to tgt with this num 
+
+As pos 4 above is filled with true , we return true 
+
+
+object checkSum{
+  def chkSum(tgt: Int, arr:Array[Int] ): Boolean = {
+    
+    val table = Array.fill[Boolean](tgt+1)(false)
+    table(0) = true 
+    
+    for(i <- 0 to  tgt ){
+      arr.foreach(elem =>  {
+        if(i+elem <= tgt &&  table(i) == true ) 
+          table(i+elem) =  true   
+      })
+    }
+    
+    return table(tgt)
+    
+  }
+  
+  def main(args:Array[String]  ): Unit = {
+    
+    println(" Check if array elements can sum upto tgt -->  " + chkSum(7, Array(2,3,5) ) )
+    println(" Check if array elements can sum upto tgt -->  " + chkSum(7, Array(3,3,3) ) )
+    println(" Check if array elements can sum upto tgt -->  " + chkSum(100, Array(1,1,25) ) )
+    
+  }
+  
+}
+
+--------------------------------------------------------------
+Apply same above logic but accumalate values from prior array position 
+Time complexity - O( (m^2) *n)  -- refer to the video at 4 PM for complexity explanation 
+m - target value 
+n - lenght of the array 
+
+object howSum{
+  def chkSum(tgt: Int, arr:Array[Int] ): List[Int] = {
+    
+    val table = Array.fill[ List[Int] ](tgt+1)(null )
+    table(0) = List[Int]() 
+    
+    for(i <- 0 to  tgt ){
+      arr.foreach(elem =>  {
+        if(i+elem <= tgt &&  table(i) != null ) 
+          table(i+elem) =  table(i) :+ elem   
+      })
+    }
+    
+    return table(tgt)
+    
+  }
+  
+  def main(args:Array[String]  ): Unit = {
+    
+    println(" Check if array elements can sum upto tgt -->  " + chkSum(7, Array(2,3,5) ) )
+    println(" Check if array elements can sum upto tgt -->  " + chkSum(7, Array(3,3,3) ) )
+    println(" Check if array elements can sum upto tgt -->  " + chkSum(100, Array(1,1,25) ) )
+    
+  }
+  
+}
+-----------------------------------------------------------------------------------------------
+The only difference with best sum is we add additional condition where we check the length of list at a position and replace it with another value only if it is shorter than the one thats already in it 
+
+Time and space complexity remains the same as above 
+
+object bestSum{
+  def findBest(tgt: Int, arr:Array[Int] ): List[Int] = {
+    
+    val table = Array.fill[ List[Int] ](tgt+1)(null )
+    table(0) = List[Int]() 
+    
+    for(i <- 0 to  tgt ){
+      arr.foreach(elem =>  {
+        if(i+elem <= tgt &&  table(i) != null && (table(i+elem) == null || table(i+elem).length > table(i).length +1    ) ) 
+           {table(i+elem) =  table(i) :+ elem }
+        
+      })
+      
+     // if(table(tgt) != null) { return table(tgt)  }
+      
+    }
+    
+    return table(tgt)
+    
+  }
+  
+  def main(args:Array[String]  ): Unit = {
+    
+    println(" Check if array elements can sum upto tgt -->  " + findBest(7, Array(2,3,5) ) )
+    println(" Check if array elements can sum upto tgt -->  " + findBest(7, Array(3,3,3) ) )
+    println(" Check if array elements can sum upto tgt -->  " + findBest(100, Array(1,1,25) ) )
+    
+  }
+  
+}
+-------------------------------------------------------------------------------------------------------
+Can construct with tabulation: 
+m - lenght of the string and n - no.of elements 
+
+Time complexity - O( (m^2)*n)
+
+object canConstruct {
+  def construct(arr:Array[String], tgt: String  ): Boolean = {
+    val table = Array.fill[Boolean](tgt.length+1)(false)
+    table(0) =true 
+    
+    for( i <- 0 to tgt.length ) {						// loop through m times 
+       if( table(i) == true ) {
+      arr.foreach(word =>  {							// check for n words each time 
+        if( tgt.slice(i, i+word.length) == word ) {
+          table(i+word.length ) = true 					// traverse through array of size m each time 
+        }												//Total time complexity - O(m*n*m) - O( (m^2)*n)
+        
+      })
+       }
+    }
+    
+    table.foreach(println)
+    return table(tgt.length)
+  }
+  
+  def main(args: Array[String]): Unit = {
+    
+    println(" can I construct ? "+   construct( Array("abcd","ab", "ac","def","cd","c" ),"abcdef"   ) )
+    println(" can I construct ? "+   construct( Array("a","aa", "aaaa" ),"aaaaaaaaaaaah"   ) )
+    
+  }
+  
+  
+}
+
+
+-----------------------------------------------------------
+howConstruct -
+
+object howConstruct {
+  def construct(arr:Array[String], tgt: String  ): List[String] = {
+    val table = Array.fill[ List[String] ](tgt.length+1)(null)
+    table(0) = List[String]() 
+    
+    for( i <- 0 to tgt.length ) {
+      if( table(i) != null )  {
+      arr.foreach(word =>  {
+        
+      //  println(" tgt.slice(i, word.length) "+ tgt.slice(i, word.length) +" word "+ word )
+        
+        if( tgt.slice(i, i+word.length) == word ) {
+     //     println(" setting the value to true at "+ (i+word.length)   )
+          
+          table(i+word.length ) = table(i) :+ word 
+        }
+        
+      })
+    }
+    }
+    
+ //   table.foreach(println)
+    return table(tgt.length)
+  }
+  
+  def main(args: Array[String]): Unit = {
+    
+    println(" how can I construct ? "+   construct( Array("abcd","ab", "ac","def","cd","c" ),"abcdef"   ) )
+    println(" how can I construct ? "+   construct( Array("a","aa", "aaaa" ),"aaaaaaaaaaaah"   ) )
+    
+  }
+  
+  
+}

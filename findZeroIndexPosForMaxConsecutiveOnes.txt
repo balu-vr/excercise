@@ -1,0 +1,47 @@
+
+
+//Find the index of 0 to be replaced to get the maximum length sequence of continuous ones
+//Below example, replace 0 at index 7 to get max no.of continuous 1
+// { 0, 0, 1, 0, 1, 1, 1, 0, 1, 1 }
+
+In Linear time 
+
+object findmaxIndPos{
+  def findInd(arr: Array[Int] ):Int= {
+    
+    var priorIndex = 0
+    var cnt = 0
+    var finalIndex = 0
+    var maxCnt = 0
+    
+    for( i <-  0 to arr.length-1 ){
+      
+      if(arr(i) == 1 ) { cnt += 1 }
+      else{
+        
+        cnt = i - priorIndex
+        priorIndex = i
+        
+      }
+      
+      if( maxCnt < cnt  ){
+        maxCnt = cnt
+        finalIndex = priorIndex
+      }
+      
+    }
+    
+    return finalIndex 
+    
+    
+  }
+  
+  def main(args:Array[String] ): Unit = {
+    
+    val arr = Array( 0, 0, 1, 0, 1, 1, 1, 0, 1, 1,0,0,1,1,1,0,1,1,1,1,0,1,1,1,1)
+    
+    println("Max Index Position:"+ findInd(arr)  )
+    
+  }
+  
+}

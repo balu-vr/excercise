@@ -1,0 +1,143 @@
+Find sum with max sub array
+
+object findSum{
+  var map = Map[Int, List[Int] ]()
+  def findsubArr(arr: Array[Int], tgt: Int ): List[Int] ={
+    
+    if( map.contains(tgt) ){ return map.getOrElse(tgt,null) }
+    if(tgt == 0) { return List[Int]() }
+    var newList: List[Int] = null 
+    //val newArr = arr.sorted
+    arr.zipWithIndex.foreach{  case(value, ind) => {
+     println(" call recursion ")
+      val rem = tgt - value
+      val arr2 = arr.zipWithIndex.filterNot{ case(newVal, newInd) => (ind == newInd)  }.map(x => x._1 )
+      var interList = findsubArr(arr2,rem)
+      if(interList != null ){
+        interList = interList :+ value
+        if( newList == null || ( newList.length < interList.length) ){
+          newList = interList
+          
+        }
+        
+      }
+      
+      
+      
+    }    }
+    
+    map = map + (tgt -> newList )
+    return newList 
+    
+  }
+  
+  def main(args:Array[String] ): Unit = {
+    
+    val arr = Array(5, 6, -5, 5, 3, 5, 3, -2, 0)
+    val tgt = 8
+    println(" Longest sub array for the tgt "+findsubArr(arr.sorted,tgt)  )  //sort the array once while passing to the recursion function 
+    
+  }
+  
+}
+------------------------------------------------------------------------ 
+Find the sum in a sub array sequentially going through the array and find the max size of sub Array.
+
+A naive approach is to do this with time complexity of O(n^2)
+
+object findSum{
+  var map = Map[Int, List[Int] ]()
+  def findsubArr(arr: Array[Int], tgt: Int ): List[Int] ={
+   
+    var newList: List[Int] = null
+    var tempList = List[Int]()
+    for(i <- 0 to  arr.length-1 ){
+      var sum = 0
+      for( j <- i to arr.length-1){
+        
+        sum += arr(j)
+          println(" sum calc "+ sum + " arr(i) " + arr(i) + " arr(j) "+ arr(j) )
+        if(sum == tgt){
+          println(" sum = 8 "+" i "+i +" j "+j )
+          map
+          for( k <- i to j){
+            tempList = tempList :+ arr(k)  
+          }
+         if( newList == null || tempList.length > newList.length ) {
+           newList = tempList
+         }
+          tempList = List[Int]()
+          
+        }
+        
+      }
+      
+    }
+    
+    
+    return newList 
+    
+  }
+  
+  def main(args:Array[String] ): Unit = {
+    
+    val arr = Array(5, 6, -5, 5, 3, 5, 3, -2, 0)
+    val tgt = 8
+    println(" Longest sub array for the tgt "+findsubArr(arr,tgt)  )
+    
+  }
+  
+  
+}
+
+----------------------------------------------------------------------
+Do the same logic in linear time 
+1. Creaate a map that stores value of sum at each index level as we traverse.
+2. whenever the sum reaches a tgt value , check the index position 
+
+import scala.collection.mutable.Map
+object findSum{
+  var map = Map[Int, Int ]()
+  def findsubArr(arr: Array[Int], tgt: Int ): List[Int] ={
+   
+    var newList: List[Int] = null
+    var tempList = List[Int]()
+    var sum = 0
+    var len = 0
+    var endInd = -1
+    for(i <- 0 to  arr.length-1 ){
+      
+      sum += arr(i)
+      map.getOrElseUpdate(sum, i)
+      println(" Map "+ map )
+      if(map.contains(sum-tgt) && len < i-map.getOrElse(sum-tgt,0)  )
+      {
+        len = i - map.getOrElse(sum-tgt,0)
+        endInd = i
+        println("when condtions met -> sum: "+ sum + " i "+i+ " start(endInd-len+1):"+ (endInd-len+1)  +" endInd "+endInd)
+        
+        for(k <-  (endInd-len+1) to endInd )
+        {tempList = tempList :+ arr(k) }
+        if(newList == null || newList.length < tempList.length )
+            {newList = tempList}
+        println(" tempList "+ tempList )
+        tempList = List[Int]()
+      }     
+      
+    }
+    
+    return newList 
+    
+  }
+  
+  def main(args:Array[String] ): Unit = {
+    
+    val arr = Array( 5, 6, -5, 5, 3, 5, 3, -2, 0)
+    val tgt = 8
+    println(" Longest sub array for the tgt "+findsubArr(arr,tgt)  )
+    
+  }
+  
+}
+
+///  5, 6, -5, 5, 3, 5, 3, -2, 0

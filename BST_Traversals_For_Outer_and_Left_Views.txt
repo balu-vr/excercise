@@ -1,0 +1,107 @@
+import scala.collection.mutable.Map
+
+object BSTInsert{
+  
+  case class Node(var data: Int, var right: Node, var left: Node )
+  
+  var map =  Map[Int, Int]()
+  
+  def insert(root: Node, newVal: Int): Node = {
+    
+    var newNode = new Node(newVal, null,null)
+    var tempRoot = root
+    
+    if(root == null) {  tempRoot = newNode }
+    
+    else if( root.data >= newVal  ){
+      tempRoot.left = insert(tempRoot.left, newVal)
+    }
+    
+    else if(root.data < newVal){  
+      tempRoot.right = insert(tempRoot.right,newVal )
+    }
+    
+    return tempRoot
+    
+  }
+  
+  def inOrder(root:Node): Unit = {
+    
+    if(root == null ){ return }
+    inOrder(root.left)
+    println(root.data ) 
+    inOrder(root.right)
+    
+  }
+  
+   def leftView(root:Node,rootval : Int): Unit = {
+    
+    if(root == null ){ return }
+     leftView(root.left,rootval)
+    
+     println(root.data ) 
+
+     if(!map.contains(root.data) ){
+       map = map + (root.data -> root.data )
+     }
+     
+    if(!map.contains(rootval) ) 
+    leftView(root.right,rootval)
+    
+  }
+  
+  def outerView(root:Node,rootval : Int): Unit = {
+    
+        leftOnly(root)
+        rightOnly(root)
+    
+    def leftOnly(root:Node): Unit = {
+        if(root == null ){ return }
+          
+        leftOnly(root.left)
+        //println("in left ")    
+      println(root.data)
+      
+    }
+    
+   def rightOnly(root:Node): Unit = {
+        if(root == null ){ return }
+            
+          
+        if(root.data != rootval )  
+        println(root.data) 
+        rightOnly(root.right)
+          
+
+      
+    }
+    
+  }
+  
+  
+  def main(args: Array[String] ): Unit = {
+    
+    var root: Node = null
+    
+    root = insert(root,32 )
+    val rootval= 32
+    root = insert(root,15 )
+    root = insert(root,22 )
+    root = insert(root,48 )
+    root = insert(root,12 )
+    root = insert(root,40 )
+    
+    println("Inorder ")
+    inOrder(root) 
+    
+    println("left view ")
+    
+    leftView(root,rootval)
+    
+    println("outer view ")
+    outerView(root,rootval)
+       
+  }
+  
+  
+}

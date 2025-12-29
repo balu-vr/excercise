@@ -1,0 +1,64 @@
+Question: Find maximum length subarray having an equal number of 0’s and 1’s
+
+Input:  { 0, 0, 1, 0, 1, 0, 0 }
+ 
+Output: Largest subarray is { 0, 1, 0, 1 } or { 1, 0, 1, 0}
+
+Link - https://www.techiedelight.com/find-maximum-length-sub-array-equal-number-0s-1s/
+
+Linear time 
+
+import scala.collection.mutable.Map
+object findSum{
+  var map = Map[Int, Int ]()
+  def findsubArr(arr: Array[Int] ): List[Int] ={
+   
+    var newList: List[Int] = null
+    var tempList = List[Int]()
+    var newArr = Array.fill[Int](arr.length)(0)
+    //create a new array and populate 0 with -1  and 1 as 1
+    //When doing sequential sum, we have to maintain a total of 0
+    for( i <- 0 to arr.length-1){
+      if( arr(i) == 0 )
+        newArr(i) = -1
+      else
+        newArr(i) = 1
+      
+    }
+    //println("newArr >>")
+    //newArr.foreach(println)
+    
+    var sum = 0
+    var i = 0
+    var cnt = 0
+    while( i <= arr.length-1 && cnt <= 15){
+      
+      sum += newArr(i)
+        if(sum == 0){
+            if(newList == null || newList.length < tempList.length )
+              newList = tempList :+ arr(i)
+        }
+        if( sum < -1 || sum > 1){
+          sum = newArr(i)
+          tempList = List[Int]()
+        }
+        tempList = tempList :+ arr(i)
+      
+      i += 1   
+        
+      
+    } 
+   
+    return newList 
+    
+  }
+  
+  def main(args:Array[String] ): Unit = {
+    
+    val arr = Array( 0, 0, 1, 0, 1, 0, 0,1,0,1,0,1,0)
+   // val tgt = 8
+    println(" Longest sub array with consecutive 1's and 0's "+findsubArr(arr)  )
+    
+  }
+  
+}

@@ -1,0 +1,345 @@
+https://www.techiedelight.com/lee-algorithm-shortest-path-in-a-maze/
+
+Given the maze (A matrix with 0's means blocked 1 means open to pass  ) , find the shortestest distance from (0,0) to any given coordinate 
+This can be atributed to source and destination 
+-------------------------------------------------------------------------------------------
+//Brute force method is to check all possible ways and find the shortest 
+Check by moving in all directions ( down(x+1,y ), up(x-1,y), right(x,y+1), left(x,y-1)  )
+if path not reached, back track the visited positions
+
+-------------------------------------------------------------------------------------------
+//Brute force 
+
+import scala.collection.mutable.Map
+
+object findShortestPath { 
+   var map = Map[String, Int]()
+  def findPath(arr: Array[Array[Int] ],  N: Int, i: Int, j: Int, x: Int, y: Int, dist:Int, minDist: Int, cnt: Int, visited: Array[Array[Int] ] ): Int = {
+     
+    // println(" Initial coordinates. i "+i +" j "+j  )
+     var newMin = minDist
+     
+    if( i == x && j == y  ) { 
+      
+      println("visited details ")
+      
+      for( i <-0 to N-1){
+        println(visited(i).mkString )
+        
+      }
+      
+      println(" returning point distance "+ Math.min(newMin, dist) )
+      println(" dist "+ dist + " newMin "+ newMin  )
+      
+      return Math.min(newMin, dist) 
+      
+    }
+    
+    val key = i + ":"+j
+    
+    visited(i)(j) = 1 
+    
+     //println( " arr(i)(j) "+ arr(i)(j) + " i "+i +" j "+j  )
+    
+ 
+    //Down 
+     if( isValid(i+1,j,N, arr) && !isVisited(visited, i+1,j)   ){
+       newMin = findPath(arr, N, i+1,j,x,y, dist+1, newMin, cnt+1,visited )
+       
+     }
+    
+    //right
+     if( isValid(i,j+1,N,arr) && !isVisited(visited, i,j+1)   ){
+       newMin = findPath(arr, N, i,j+1,x,y, dist+1, newMin, cnt+1,visited )
+       
+     }
+    
+    //Up 
+     if( isValid(i-1,j,N,arr) && !isVisited(visited, i-1,j)  ){
+       newMin = findPath(arr, N, i-1,j,x,y, dist+1, newMin, cnt+1,visited  )
+       
+     }
+    
+    //left 
+     if( isValid(i,j-1,N,arr) && !isVisited(visited, i,j-1)   ){
+       newMin = findPath(arr, N, i,j-1,x,y, dist+1, newMin, cnt+1,visited )
+       
+     }
+    
+    //Backtracking   (This is an else condition if the path is not found in all if's above, so it goes back to previous step ... )
+    visited(i)(j) = 0 
+   
+      return newMin
+    
+  }
+  
+  def isVisited(visited:Array[Array[Int]], i: Int, j: Int  ): Boolean ={
+    
+    if( visited(i)(j) == 1  ){ return true }
+    return false 
+    
+  }
+  
+  def isValid( i: Int, j: Int,N: Int, arr: Array[Array[Int]] ): Boolean = {
+    
+    if( (i>= 0 && i <  N && j >= 0 && j < N) && arr(i)(j) == 1  )
+    
+    
+    { return true}
+    return false
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    val arr = Array( Array( 1, 1, 1, 1, 1, 0, 0, 1, 1, 1),
+                     Array( 0, 1, 1, 1, 1, 1, 0, 1, 0, 1),
+                     Array( 0, 0, 1, 0, 1, 1, 1, 0, 0, 1),
+                     Array( 1, 0, 1, 1, 1, 0, 1, 1, 0, 1),
+                     Array( 0, 0, 0, 1, 0, 0, 0, 1, 0, 1),
+                     Array( 1, 0, 1, 1, 1, 0, 0, 1, 1, 0),
+                     Array( 0, 0, 0, 0, 1, 0, 0, 1, 0, 1),
+                     Array( 0, 1, 1, 1, 1, 1, 1, 1, 0, 0),
+                     Array( 1, 1, 1, 1, 1, 0, 0, 1, 1, 1),
+                     Array( 0, 0, 1, 0, 0, 1, 1, 0, 0, 1)
+                   )
+    var N = 10
+    var visited = Array.ofDim[Int](10,10)
+    val minDist = Int.MaxValue
+    val dist = 0
+    
+    println("Min distance " + findPath(arr,N,0,0,6,7, dist, minDist,dist,visited ) )
+    
+    
+  }
+
+}
+--------------------------------------------------------------
+Apply BFS to the above problem - Time complexity will be O(MN)
+
+	Step 1: Create a node that contains (cell coordinates and the  incremental value (+1) per move )
+	Step 2: Create a queue that stores node with all the 3 parameters 
+	Step 3: At a given position of the maze 
+				a. We dequeue the node from the queue 
+				b. We see if the position is already what we want and return the weightage we arrived at 
+				b. If not, check the sorrounding positions in 4 coordinates ( (x+1, y) , (x-1,y), (x,y+1), (x, y-1) ) to see if they are not visited and valid to coniser 
+					If valid, add those coordinates to the queue by incrementing the wieghtage by 1 along the path 
+		
+	Tech Note: 
+		1. Node created is case class 
+		2. The variables defined in it can be accessed by class.variableName 
+
+import scala.collection.mutable.Map
+import scala.collection.mutable.Queue
+
+object findShortestPath { 
+   var map = Map[String, Int]()
+  def findPathBFS(arr: Array[Array[Int] ],  N: Int, x: Int, y: Int, visited: Array[Array[Int] ] ): Int = {
+     
+     //Traversal on 4 directions of the given cell 
+      var rowTraversal = Array(-1,1,0,0)
+      var colTraversal = Array(0,0,-1,1)
+	 
+	 //case class to store coordinates and weight 
+	 case class node(i: Int, j: Int, w: Int )
+     
+	 var q = new Queue[ node ] 
+     //Initial coordinates and weight 
+     var n = node(0,0,0)
+      
+	//Enqueue the firs element 
+     q.enqueue(n)
+    
+      while(!q.isEmpty){
+        
+        val qVal = q.dequeue
+        val a = qVal.i
+        val b = qVal.j
+        val c = qVal.w
+        
+        if( a == x && b == y ){ return c }
+		
+		// Mark current node as visited 
+        visited(a)(b) = 1
+		
+		//check for the cells around the current cell in alll 4 directions  
+         for(i <- 0 to 3 )
+            {
+               val row = a + rowTraversal(i)
+               val col = b + colTraversal(i)
+               
+               if( isValid(row,col,arr,visited,N)  )  {
+                 
+                   val newNode = node( row,col, c+1 )
+                   q.enqueue(newNode)
+                 
+               } 
+              
+            }
+        
+        
+      }
+    
+     return -1
+    
+  }
+  
+  def isValid(i: Int, j: Int, arr:Array[Array[Int]],visited: Array[Array[Int]], N: Int ): Boolean = {
+    
+      if( i >=0 && i < N && j>=0 && j < N ) {
+        
+          if( visited(i)(j) == 0 && arr(i)(j) == 1 )
+        return true
+      }
+    
+     return false 
+  }
+  
+  
+  def isVisited(visited:Array[Array[Int]], i: Int, j: Int  ): Boolean ={
+    
+    if( visited(i)(j) == 1  ){ return true }
+    return false 
+    
+  }
+  
+  def isValid( i: Int, j: Int,N: Int, arr: Array[Array[Int]] ): Boolean = {
+    
+    if( (i>= 0 && i <  N && j >= 0 && j < N) && arr(i)(j) == 1  )
+    
+    
+    { return true}
+    return false
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    val arr = Array( Array( 1, 1, 1, 1, 1, 0, 0, 1, 1, 1),
+                     Array( 0, 1, 1, 1, 1, 1, 0, 1, 0, 1),
+                     Array( 0, 0, 1, 0, 1, 1, 1, 0, 0, 1),
+                     Array( 1, 0, 1, 1, 1, 0, 1, 1, 0, 1),
+                     Array( 0, 0, 0, 1, 0, 0, 0, 1, 0, 1),
+                     Array( 1, 0, 1, 1, 1, 0, 0, 1, 1, 0),
+                     Array( 0, 0, 0, 0, 1, 0, 0, 1, 0, 1),
+                     Array( 0, 1, 1, 1, 1, 1, 1, 1, 0, 0),
+                     Array( 1, 1, 1, 1, 1, 0, 0, 1, 1, 1),
+                     Array( 0, 0, 1, 0, 0, 1, 1, 0, 0, 1)
+                   )
+    var N = 10
+    var visited = Array.ofDim[Int](10,10)
+    val minDist = Int.MaxValue
+    val dist = 0
+    
+    println("Min distance " + findPathBFS(arr,N,6,7, visited ) )
+    
+    
+  }
+
+}
+
+-----------------------------------------------------------------------------
+import scala.collection.mutable.Map
+
+object findShortestPath { 
+   var map = Map[String, Int]()
+  def findPath(arr: Array[Array[Int] ],  N: Int, i: Int, j: Int, x: Int, y: Int, dist:Int, minDist: Int, cnt: Int ): Int = {
+    
+      
+     
+    // println(" Initial coordinates. i "+i +" j "+j  )
+     var newMin = minDist
+     var newDist = dist
+    if( i == x && j == y  ) { 
+      
+      println("Array details ")
+      
+      for( i <-0 to N-1){
+        println(arr(i).mkString )
+        
+      }
+      
+      println(" returning point distance "+ Math.min(newMin, newDist) )
+      println(" dist "+ dist + " newMin "+ newMin + " newDist "+ newDist )
+      newDist = 0
+      
+      return Math.min(newMin, dist) 
+      
+    }
+    
+    val key = i + ":"+j
+    
+    
+    
+    
+    arr(i)(j) = 1 
+    
+     //println( " arr(i)(j) "+ arr(i)(j) + " i "+i +" j "+j  )
+    
+ 
+    //Down 
+     if( isValid(i+1,j,N) && !isVisited(arr, i+1,j)   ){
+       //println("Down" + " i " + i + " j "+ j)
+       newMin = findPath(arr, N, i+1,j,x,y, newDist+1, newMin, cnt+1 )
+       
+     }
+    
+    //right
+     if( isValid(i,j+1,N) && !isVisited(arr, i,j+1)   ){
+       //println("right" + " i " + i + " j "+ j)
+       newMin = findPath(arr, N, i,j+1,x,y, newDist+1, newMin, cnt+1 )
+       
+     }
+    
+    //Up 
+     if( isValid(i-1,j,N) && !isVisited(arr, i-1,j)  ){
+       //println("Up" + " i " + i + " j "+ j)
+       newMin = findPath(arr, N, i-1,j,x,y, newDist+1, newMin, cnt+1 )
+       
+     }
+    
+    //left 
+     if( isValid(i,j-1,N) && !isVisited(arr, i,j-1)   ){
+       //println("Left" + " i " + i + " j "+ j)
+       newMin = findPath(arr, N, i,j-1,x,y, newDist+1, newMin, cnt+1 )
+       
+     }
+    
+    map = map + (key ->  newMin) 
+    newDist = 0
+    arr(i)(j) = 0 
+    if( map.contains(key) ){  return map.getOrElse(key, -1)  }
+    //newDist = 0
+   // dist 
+    return newMin
+    
+  }
+  
+  def isVisited(arr:Array[Array[Int]], i: Int, j: Int  ): Boolean ={
+    
+    if( arr(i)(j) == 1  ){ return true }
+    return false 
+    
+  }
+  
+  def isValid( i: Int, j: Int,N: Int ): Boolean = {
+    
+    if( i>= 0 && i <  N && j >= 0 && j < N){ return true}
+    return false
+    
+  }
+  
+  def main(args: Array[String] ): Unit = {
+    
+    val arr = Array.ofDim[Int](4,4)
+    var N = 4
+   
+    val minDist = Int.MaxValue
+    val dist = 0
+    
+    println("Min distance " + findPath(arr,N,0,0,2,3, dist, minDist,dist ) )
+    
+    
+  }
+
+}

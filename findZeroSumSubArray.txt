@@ -1,0 +1,69 @@
+Given an integer array, find all sub arrays with 0 sum 
+
+Input - {  2,-3,4,-1,0,4 }
+Sub arrays - { -3,-1,0,4} & { 0 }
+
+Sub arrays are considered from right to left, not going all around like in recursion 
+
+Brute force - O(n^3) 
+
+object howZeroSum {
+    var subArrays = List[List[Int] ]()
+    var map = Map[String, Int ]()
+  def zeroSum( arr: Array[Int], cnt: Int, tgt: Int ): List[Int] =  {
+    
+    //var sortArr = arr.sorted 
+    //if( map.contains(arr.mkString) ){  return map.getOrElse(arr.mkString, null) }
+    
+    var newList = List[Int]()
+    var arrOfArrays = List[List[Int] ]()
+    
+    for(i <- 0 to arr.length-1){     //n times 
+      var sum = 0
+      for(j <- i to arr.length-1){    // n * n times
+        
+        sum += arr(j)                 // n * n * n times 
+        
+        if(sum == 0){
+           newList = List[Int]() 
+          for( p <- i to j  ){        //n * n * n times 
+              newList = newList :+ arr(p)  
+            }
+           arrOfArrays = newList :: arrOfArrays 
+           subArrays = arrOfArrays
+          
+          println(" SubArray from "+ i +" to "+j )
+          
+        }
+      }
+    }
+    
+   
+    //map = map + (arr.mkString -> newList)
+    return newList
+    
+  }
+  
+  
+  def main(args: Array[String]): Unit = {
+    
+    val arr = Array( 3, 4, -7, 3, 1, 3, 1, -4, -2, -2)
+    val tgt = 0
+    val cnt = 0
+    println(" zeroSum sub array for "+tgt + " =  "+  zeroSum(arr,tgt,cnt) )
+    println("List of sub arrays")
+    subArrays.foreach(println)
+    println(" Map "+map)
+    
+  }
+  
+}
+
+--------------------------
+
+In case of going all over in recursion :
+
+//rememeber: for an array to get the index value also, we do arr.zipWithIndex.foreach{ case(elem, indexVal) }
+//using indexVal above and filter elements from the same array and extract only element tp copy to newArr
+// var newArr = arr.zipWithIndex.filterNot{  case(e2,i2) => ( index == i2)  }.map(x => x._1)
+

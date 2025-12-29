@@ -1,0 +1,29 @@
+Find duplicate:
+
+Approach 1: using map 
+
+object findDuplicate {
+   
+    var map = Map[Int, Int ]()
+  def dupCheck( arr: Array[Int] ): Int =  {
+    arr.foreach(x => {
+      if( map.contains(x) ) { return x}
+      map = map + (x -> x)
+    })
+    return 0
+  }
+  
+  def main(args: Array[String]): Unit = {
+    
+    val arr = Array( 1, 2, 3, 4, 2  )
+    println("Duplicate in the array is "+ dupCheck(arr) ) 
+  }
+  
+}
+
+Approach 2: 
+Assumption: Array has elements from 1 to n which will be less than or equalt to size fo array 
+1. Create an empty array equal to max element of input array and fill it with -1 --> O(n)
+2. Check if array(value) > 0 then we found duplicate
+else 
+ Take each element in the array and place it at the array value as the index.

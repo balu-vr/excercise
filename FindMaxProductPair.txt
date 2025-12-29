@@ -1,0 +1,75 @@
+//Find Pair of integers that form max Product among the array values
+
+Naive Approach: O(n^2)
+
+object findmaxProdPair{
+  def findMaxProd(arr: Array[Int] ): List[Int]= {
+    
+    var product = Int.MinValue
+    var l: List[Int] = null
+    
+    for( i <- 0 to arr.length-1 ){
+      for(j <- i+1  to arr.length -1 ){
+        
+        if( arr(i)*arr(j) > product  ){
+          l = List[Int]()
+          product = arr(i)*arr(j)
+          l = l :+ arr(i) :+ arr(j)
+          //l = l :+ arr(j)
+        }
+        
+      }
+      
+      
+    }
+    
+    return l
+    
+  }
+  
+  def main(args:Array[String] ): Unit = {
+    
+    val arr = Array( -10, -3, 5, 6, -2)
+    
+    println("Max Index Position:"+ findMaxProd(arr)  )
+    
+  }
+  
+}
+
+Better approach - O(n.logn)
+
+//Find Pair of integers that form max Product among the array values
+
+object findmaxProdPair{
+  def findMaxProd(arr: Array[Int] ): List[Int]= {
+    
+    var product = Int.MinValue
+    var l: List[Int] = null
+    val newArr = arr.sorted
+    val len = newArr.length-1
+    
+    if(  newArr(0)*newArr(1)  >=   newArr(len)*newArr(len-1) )  {
+      l = List[Int]()
+      product = newArr(0)*newArr(1)
+      l = l :+ newArr(0) :+ newArr(1)
+      
+    }
+    
+    else  {
+      l = List[Int]()
+      product = newArr(len)*newArr(len-1)
+      l = l :+ newArr(len) :+ newArr(len-1)
+    }   
+    return l
+    
+  }
+  
+  def main(args:Array[String] ): Unit = {
+    
+    val arr = Array( -10, -3, 5, 6, -2)
+    println("Max Index Position:"+ findMaxProd(arr)  )
+    
+  }
+  
+}
